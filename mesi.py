@@ -32,7 +32,7 @@ file = open("dump/weather1/" + filename + '1.PRG', 'r')
 #initialisation of cache
 i = 0
 cache = []
-
+test = {}
 while i < cache_blocks:
     cache.append([0,0])
     i += 1
@@ -48,7 +48,7 @@ while line:
         else:
             cycle_count += 1
             inst_read = False
-    elif (int_type inst_type == '2' or inst_type == '3'):
+    elif (inst_type == '2' or inst_type == '3'):
         if not data_read:
             data_read = True
         else:
@@ -58,6 +58,7 @@ while line:
         tag_index = memory_block_number[:-memory_block_offset]
         cache_index = tag_index[-cache_block_offset:]
         tag = tag_index[:-cache_block_offset]
+        test[memory_block_number] = 'y'
         #start of cache lookup
         int_cache_index = int(cache_index,2)
         int_tag = int(tag, 2)
@@ -88,6 +89,7 @@ while line:
                 pass
     line = file.readline()
 
-print cache_miss
-print cache_access
-print cache_miss/float(cache_access)
+print(cache_miss)
+print(cache_access)
+print(cache_miss/float(cache_access))
+print len(test)
