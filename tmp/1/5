@@ -1,0 +1,12 @@
+\subsubsection{Cache Size: 16KB}
+\begin{table}[here]
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 14381035  & 18125829    & 0.793400125313 \\
+\hline
+Average & 14381035    & 18125829  & 0.793400125313 \\
+\hline
+\end{tabularx}
+\end{table}

@@ -161,6 +161,17 @@ while not completed:
         if line[x]:
             completed = False
 
-print(cache_miss)
-print(cache_access)
-print(cache_miss/float(cache_access))
+print '\\subsubsection{Cache Size: ' + str(cache_size/1024) + 'KB}'
+print '\\begin{table}[here]'
+print '\\begin{tabularx}{\\textwidth}{ | l | c | c | X | }'
+print '\\hline'
+print 'Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\\\'
+print '\\hline'
+
+for x in range(no_processors):
+    print str(x + 1) + '    & ' + str(cache_miss_indie[x]) + '  & ' + str(cache_access_indie[x]) + '    & ' + str(cache_miss_indie[x]/float(cache_access_indie[x])) + ' \\\\'
+    print '\\hline'
+print 'Average' + ' & ' + str(cache_miss) + '    & ' + str(cache_access) + '  & ' + str(cache_miss/float(cache_access)) + ' \\\\'
+print '\\hline'
+print '\\end{tabularx}'
+print '\\end{table}'
