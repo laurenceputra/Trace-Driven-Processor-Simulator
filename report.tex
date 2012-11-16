@@ -1,0 +1,490 @@
+\documentclass[]{article}
+\usepackage[hmargin=30mm]{geometry}
+\usepackage{tabularx}
+\usepackage{listings}
+\lstset{breaklines=true, frame=shadowbox, numbers=left}
+
+\begin{document}
+\title{CS4223 Assignment 3}
+\author{Laurence Putra Franslay (U096833E)}
+\date{14th Nov 2012}
+\maketitle
+
+Appendix starts on page \pageref{sec:appendix_start} of the report.\\
+
+\section{Tools to run the experiment}
+The code was written in Python, and will run using Python 2.x. However, for this experiment, as the data set is enormous, pypy was used as it is 40\% more efficient than Python 2.x. 2 different environments were used to run this software, CentOS6 and MacOSX 10.8.2.\\
+
+To run the software you have to install either pypy(recommended) or Python 2.x on the machine (Python 3.x is not supported due to its many performance issues). On CentOS6 it is \emph{sudo yum install pypy} and on MacOSX 10.8.2 it is \emph{brew install pypy}. Note that for MacOSX 10.8.2 you need to have Homebrew (http://mxcl.github.com/homebrew/) to install.\\
+
+It also should be noted that the tracefiles should be stored in the format 
+\begin{verbatim}
+dump
+    \weather1
+        WEATHER1.PRG
+    \weather2
+        WEATHER1.PRG    WEATHER2.PRG
+    \weather4
+        WEATHER1.PRG    WEATHER2.PRG    WEATHER3.PRG    WEATHER4.PRG
+    \weather8
+        WEATHER1.PRG    WEATHER2.PRG    WEATHER3.PRG    WEATHER4.PRG
+        WEATHER5.PRG    WEATHER6.PRG    WEATHER7.PRG    WEATHER8.PRG
+\end{verbatim}
+where dump is in the same directory as the code file. To run the code, simply run
+\begin{lstlisting}
+pypy mesi_sim.py WEATHER 1 1024 64
+\end{lstlisting}
+where the first argument is the script name, second argument is the filename, third argument is the cache size, and fourth argument is the cache block size.\\
+
+\subsection{Implementation Details}
+Due to the lack of proper threading support in Python, the processors were assumed to run in order, i.e. Processor 1 followed by Processor 2 and so on.\\
+
+The cache is represented in a 3D list, the first dimension pointing to the 2D cache of each individual processor. Each record held 2 values, the state as well as the tag. The state of each cache record is initially initialised to `I'. \\
+
+The bus for each processor was implemented using a \emph{deque}, which is essentially a queue. When a processor starts its cycle, it will run through all the messages in the queue and update the cache depending on the contents of each message. The message is a tuple containing the operation (read or write), as weill as the tag and cache index. \\
+
+When there is a cache miss, the processer will stall for 10 cycles, but the bus queue is still being fed with updates.
+
+The full code can be found in \emph{Section A of the Appendix}.
+
+\section{Conclusion}
+The cache miss ratio is calculated via the following equation. \\
+
+$(Cache Miss Ratio) = (Cache Miss Count)/(Cache Access Count)$
+
+\subsection{Increasing Cache Size}
+From the experiment results, which can be found in \emph{Section B of the Appendix}, it is clear that increasing the cache size results in a smaller cache miss ratio. For the multiprocessor traces, when you compare the cache miss ratio of the same processors for different cache sizes, it also shows that the larger the cache size, the smaller the cache miss ratio.\\
+
+This observation is probably due to the fact that with a larger cache size, one can store more data within the cache, and hence, have less cache misses.\\
+
+\subsection{Increasing number of processors}
+There is no visible relation between the number of processors and the cache miss ratio. When the processor count is increased, the cache miss ratio sometimes increase and sometimes decrease.\\
+
+This observation is probably due to the fact that the processor cannot choose which data it gets to read, and hence the cache miss ratio as a result of increasing the processor count is unpredictable.\\
+
+\pagebreak
+\appendix
+\label{sec:appendix_start}
+\section{Code}
+\lstinputlisting[language=Python]{mesi_sim.py}
+
+\section{Experiment results}
+\subsection{1 Processor}
+\subsubsection{Cache Size: 1KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 14677614  & 18125829    & 0.809762356249 \\
+\hline
+Overall & 14677614    & 18125829  & 0.809762356249 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 2KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 14590128  & 18125829    & 0.804935763214 \\
+\hline
+Overall & 14590128    & 18125829  & 0.804935763214 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 4KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 14470247  & 18125829    & 0.798321941579 \\
+\hline
+Overall & 14470247    & 18125829  & 0.798321941579 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 8KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 14444872  & 18125829    & 0.796922005609 \\
+\hline
+Overall & 14444872    & 18125829  & 0.796922005609 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 16KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 14381035  & 18125829    & 0.793400125313 \\
+\hline
+Overall & 14381035    & 18125829  & 0.793400125313 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 32KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 14379670  & 18125829    & 0.793324818412 \\
+\hline
+Overall & 14379670    & 18125829  & 0.793324818412 \\
+\hline
+\end{tabularx}
+\pagebreak
+
+
+\subsection{2 Processor}
+\subsubsection{Cache Size: 1KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 7565265  & 9062884    & 0.834752491591 \\
+\hline
+2    & 7569500  & 9062945    & 0.835214160518 \\
+\hline
+Overall & 15134765    & 18125829  & 0.834983326832 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 2KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 7509633  & 9062884    & 0.828614048243 \\
+\hline
+2    & 7513657  & 9062945    & 0.829052476871 \\
+\hline
+Overall & 15023290    & 18125829  & 0.828833263295 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 4KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 7422706  & 9062884    & 0.819022509832 \\
+\hline
+2    & 7402491  & 9062945    & 0.81678648607 \\
+\hline
+Overall & 14825197    & 18125829  & 0.817904494189 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 8KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 7398607  & 9062884    & 0.816363422504 \\
+\hline
+2    & 7377055  & 9062945    & 0.813979892849 \\
+\hline
+Overall & 14775662    & 18125829  & 0.815171653666 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 16KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 7350018  & 9062884    & 0.811002104849 \\
+\hline
+2    & 7316131  & 9062945    & 0.807257574663 \\
+\hline
+Overall & 14666149    & 18125829  & 0.809129833455 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 32KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 7341061  & 9062884    & 0.810013788105 \\
+\hline
+2    & 7307170  & 9062945    & 0.806268823214 \\
+\hline
+Overall & 14648231    & 18125829  & 0.808141299358 \\
+\hline
+\end{tabularx}
+\pagebreak
+
+
+\subsection{4 Processors}
+\subsubsection{Cache Size: 1KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 3730387  & 4531371    & 0.823235837454 \\
+\hline
+2    & 3738672  & 4531558    & 0.825030155192 \\
+\hline
+3    & 3728923  & 4531513    & 0.82288696954 \\
+\hline
+4    & 3717382  & 4531387    & 0.820362948475 \\
+\hline
+Overall & 14915364    & 18125829  & 0.8228789977 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 2KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 3685957  & 4531371    & 0.813430857902 \\
+\hline
+2    & 3687713  & 4531558    & 0.813784795428 \\
+\hline
+3    & 3681779  & 4531513    & 0.812483380275 \\
+\hline
+4    & 3669681  & 4531387    & 0.809836149506 \\
+\hline
+Overall & 14725130    & 18125829  & 0.812383808763 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 4KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 3638737  & 4531371    & 0.803010170653 \\
+\hline
+2    & 3636115  & 4531558    & 0.80239842456 \\
+\hline
+3    & 3631885  & 4531513    & 0.801472929682 \\
+\hline
+4    & 3620475  & 4531387    & 0.798977222647 \\
+\hline
+Overall & 14527212    & 18125829  & 0.801464694387 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 8KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 3627905  & 4531371    & 0.800619724141 \\
+\hline
+2    & 3623026  & 4531558    & 0.799510013995 \\
+\hline
+3    & 3619226  & 4531513    & 0.798679381478 \\
+\hline
+4    & 3610225  & 4531387    & 0.796715222072 \\
+\hline
+Overall & 14480382    & 18125829  & 0.798881088418 \\
+\hline
+\end{tabularx}\subsection{4 Processors}
+
+
+\subsubsection{Cache Size: 16KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 3595380  & 4531371    & 0.793441984777 \\
+\hline
+2    & 3581420  & 4531558    & 0.790328624283 \\
+\hline
+3    & 3577234  & 4531513    & 0.789412719328 \\
+\hline
+4    & 3568609  & 4531387    & 0.787531279054 \\
+\hline
+Overall & 14322643    & 18125829  & 0.790178645071 \\
+\hline
+\end{tabularx}
+
+
+\subsubsection{Cache Size: 32KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 3592148  & 4531371    & 0.792728734858 \\
+\hline
+2    & 3578329  & 4531558    & 0.789646518924 \\
+\hline
+3    & 3574161  & 4531513    & 0.788734579378 \\
+\hline
+4    & 3565379  & 4531387    & 0.786818473019 \\
+\hline
+Overall & 14310017    & 18125829  & 0.789482070034 \\
+\hline
+\end{tabularx}
+\pagebreak
+
+
+\subsection{8 Processors}
+\subsubsection{Cache Size: 1KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 1930214  & 2269692    & 0.850429926175 \\
+\hline
+2    & 1946099  & 2269847    & 0.857370122303 \\
+\hline
+3    & 1940240  & 2269754    & 0.854823914838 \\
+\hline
+4    & 1853819  & 2261703    & 0.81965625018 \\
+\hline
+5    & 1853822  & 2261679    & 0.81966627448 \\
+\hline
+6    & 1855236  & 2261711    & 0.820279867764 \\
+\hline
+7    & 1855193  & 2261759    & 0.820243447688 \\
+\hline
+8    & 1927886  & 2269684    & 0.849407230258 \\
+\hline
+Overall & 15162509    & 18125829  & 0.836513960272 \\
+\hline
+\end{tabularx}
+\subsubsection{Cache Size: 2KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 1901344  & 2269692    & 0.837710138644 \\
+\hline
+2    & 1915059  & 2269847    & 0.84369519179 \\
+\hline
+3    & 1910585  & 2269754    & 0.8417586223 \\
+\hline
+4    & 1821863  & 2261703    & 0.805527074068 \\
+\hline
+5    & 1821875  & 2261679    & 0.80554092778 \\
+\hline
+6    & 1824877  & 2261711    & 0.806856844221 \\
+\hline
+7    & 1824806  & 2261759    & 0.806808329269 \\
+\hline
+8    & 1898190  & 2269684    & 0.83632347058 \\
+\hline
+Overall & 14918599    & 18125829  & 0.823057472295 \\
+\hline
+\end{tabularx}
+\subsubsection{Cache Size: 4KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 1871102  & 2269692    & 0.824385863809 \\
+\hline
+2    & 1881520  & 2269847    & 0.828919306015 \\
+\hline
+3    & 1876649  & 2269754    & 0.82680722228 \\
+\hline
+4    & 1791328  & 2261703    & 0.792026185578 \\
+\hline
+5    & 1791306  & 2261679    & 0.792024862945 \\
+\hline
+6    & 1792825  & 2261711    & 0.792685272345 \\
+\hline
+7    & 1793187  & 2261759    & 0.792828502064 \\
+\hline
+8    & 1865131  & 2269684    & 0.821758006841 \\
+\hline
+Overall & 14663048    & 18125829  & 0.808958751625 \\
+\hline
+\end{tabularx}
+\subsubsection{Cache Size: 8KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 1865844  & 2269692    & 0.822069249925 \\
+\hline
+2    & 1875488  & 2269847    & 0.826261858178 \\
+\hline
+3    & 1871516  & 2269754    & 0.824545743724 \\
+\hline
+4    & 1786931  & 2261703    & 0.790082075321 \\
+\hline
+5    & 1786935  & 2261679    & 0.790092227942 \\
+\hline
+6    & 1787403  & 2261711    & 0.790287972248 \\
+\hline
+7    & 1787838  & 2261759    & 0.790463528608 \\
+\hline
+8    & 1859556  & 2269684    & 0.819301717772 \\
+\hline
+Overall & 14621511    & 18125829  & 0.806667159885 \\
+\hline
+\end{tabularx}
+\subsubsection{Cache Size: 16KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 1844818  & 2269692    & 0.812805437918 \\
+\hline
+2    & 1849769  & 2269847    & 0.81493113853 \\
+\hline
+3    & 1844850  & 2269754    & 0.812797333984 \\
+\hline
+4    & 1764478  & 2261703    & 0.780154600317 \\
+\hline
+5    & 1764482  & 2261679    & 0.780164647591 \\
+\hline
+6    & 1764941  & 2261711    & 0.78035655307 \\
+\hline
+7    & 1764900  & 2261759    & 0.780321864531 \\
+\hline
+8    & 1833791  & 2269684    & 0.807949917257 \\
+\hline
+Overall & 14432029    & 18125829  & 0.796213458706 \\
+\hline
+\end{tabularx}
+\subsubsection{Cache Size: 32KB}
+\begin{tabularx}{\textwidth}{ | l | c | c | X | }
+\hline
+Processor No.    & Cache Miss    & Cache Access  &   Cache Miss Ratio \\
+\hline
+1    & 1843866  & 2269692    & 0.812385997748 \\
+\hline
+2    & 1848326  & 2269847    & 0.814295412863 \\
+\hline
+3    & 1843234  & 2269754    & 0.812085362555 \\
+\hline
+4    & 1763003  & 2261703    & 0.779502436881 \\
+\hline
+5    & 1763031  & 2261679    & 0.77952308882 \\
+\hline
+6    & 1763585  & 2261711    & 0.779757006974 \\
+\hline
+7    & 1763526  & 2261759    & 0.779714372751 \\
+\hline
+8    & 1831888  & 2269684    & 0.807111474549 \\
+\hline
+Overall & 14420459    & 18125829  & 0.795575143073 \\
+\hline
+\end{tabularx}
+
+
+
+\end{document}
